@@ -1,6 +1,6 @@
 import Head from "next/head"
-import { useXRStore } from "library/store"
-import { XR } from "@react-three/xr"
+import { useXRStore } from "@/library/XRstore"
+import { Controllers, Hands, XR } from "@react-three/xr"
 import { Canvas } from "@react-three/fiber"
 import * as THREE from "three"
 import { Box, Environment, OrbitControls, Text } from "@react-three/drei"
@@ -8,6 +8,7 @@ import Interaction from "@/components/Interaction"
 import { useState } from "react"
 import { XRDefaults } from "@/components/XRDefaults"
 import { VRARButton } from "@/components/VRARButton"
+import { SharedSpaceSetup } from "@/components/SharedSpaceSetup"
 
 export default function Home() {
   const xrMode = useXRStore((state) => state.xrMode)
@@ -31,18 +32,15 @@ export default function Home() {
           background: xrMode != "AR" ? "#111" : undefined,
         }}
       >
-        {xrMode != "AR" ? (
-          <Environment
-            preset="forest"
-            ground={{ height: 5, radius: 40, scale: 20 }}
-          />
-        ) : null}
+        <ambientLight intensity={2} />
+        <OrbitControls maxPolarAngle={Math.PI / 2} />
+
         <XR referenceSpace="local-floor" onSessionEnd={() => setXRMode("OFF")}>
           <XRDefaults
             position={[0, 1.6, 2]}
             rotation={[0, 0, 0]} //XR sessions are panned 180 degrees off by default
           />
-
+          <SharedSpaceSetup />
           <DefaultScene />
         </XR>
       </Canvas>
@@ -54,23 +52,20 @@ const DefaultScene = () => {
   const xrMode = useXRStore((state) => state.xrMode)
   const [cubeColor, setCubeColor] = useState("#440066")
   const changeColor = () => {
-    const colorHex = `#${new THREE.Color(
-      Math.random() / 2,
-      Math.random() / 2,
-      Math.random() / 2
-    ).getHexString()}`
+    const colorHex = `#${new THREE.Color(Math.random() / 2, Math.random() / 2, Math.random() / 2).getHexString()}`
     setCubeColor(colorHex)
   }
 
   return (
     <>
+      <Hands />
+      <Controllers />
+      {/* {xrMode != "AR" ? <Environment preset="forest" ground={{ height: 5, radius: 40, scale: 20 }} /> : null} */}
       <ambientLight intensity={0.1} />
       <pointLight position={[20, 10, -15]} intensity={2} color="#FAA" />
       <pointLight position={[-20, 10, 5]} intensity={2} color="#AAF" />
-      <primitive object={new THREE.AxesHelper(2)} />
-      <primitive object={new THREE.GridHelper(20, 20)} />
-      <OrbitControls maxPolarAngle={Math.PI / 2} />
-      <Interaction onUp={() => changeColor()}>
+      <primitive object={new THREE.AxesHelper(0.5)} />
+      {/* <Interaction onUp={() => changeColor()}>
         <Box key="companionCube" position={[0, 0.5, 0]}>
           <meshPhongMaterial color={cubeColor} />
         </Box>
@@ -80,7 +75,7 @@ const DefaultScene = () => {
         <Text position={[0, 0.5, 0.51]} scale={0.3} color={cubeColor}>
           {cubeColor}
         </Text>
-      </Interaction>
+      </Interaction> */}
     </>
   )
 }

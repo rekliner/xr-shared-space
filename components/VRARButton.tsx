@@ -1,11 +1,9 @@
-import { useXRStore } from "@/library/store"
+import { useXRStore } from "@/library/XRstore"
 import { XRButton } from "@react-three/xr"
 import { useState } from "react"
 
 export const VRARButton = (props: { arFeatures?: string[] }) => {
-  const {
-    arFeatures = ["local-floor", "bounded-floor", "hand-tracking", "layers"],
-  } = props
+  const { arFeatures = ["local-floor", "bounded-floor", "hand-tracking", "layers"] } = props
   const [sessionType, setSessionType] = useState("VR" as "VR" | "AR")
   const setXRMode = useXRStore((state) => state.setXRMode)
   const xrMode = useXRStore((state) => state.xrMode)
@@ -29,28 +27,12 @@ export const VRARButton = (props: { arFeatures?: string[] }) => {
           minWidth: "100px",
         }}
       >
-        <div
-          onClick={() => setSessionType("VR")}
-          style={{ display: "flex", alignItems: "center" }}
-        >
-          <input
-            key="vr"
-            type="radio"
-            checked={sessionType === "VR"}
-            onChange={() => setSessionType("VR")}
-          />
+        <div onClick={() => setSessionType("VR")} style={{ display: "flex", alignItems: "center" }}>
+          <input key="vr" type="radio" checked={sessionType === "VR"} onChange={() => setSessionType("VR")} />
           VR
         </div>
-        <div
-          onClick={() => setSessionType("AR")}
-          style={{ display: "flex", alignItems: "center" }}
-        >
-          <input
-            key="ar"
-            type="radio"
-            checked={sessionType === "AR"}
-            onChange={() => setSessionType("AR")}
-          />
+        <div onClick={() => setSessionType("AR")} style={{ display: "flex", alignItems: "center" }}>
+          <input key="ar" type="radio" checked={sessionType === "AR"} onChange={() => setSessionType("AR")} />
           AR
         </div>
       </div>
@@ -85,9 +67,7 @@ export const VRARButton = (props: { arFeatures?: string[] }) => {
           } else {
             if (
               navigator.xr &&
-              (await navigator.xr.isSessionSupported(
-                sessionType === "VR" ? "immersive-vr" : "immersive-ar"
-              ))
+              (await navigator.xr.isSessionSupported(sessionType === "VR" ? "immersive-vr" : "immersive-ar"))
             ) {
               setXRMode(sessionType)
             }

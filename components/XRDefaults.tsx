@@ -2,14 +2,11 @@ import { useFrame } from "@react-three/fiber"
 import { useXR } from "@react-three/xr"
 import { useRef } from "react"
 import * as THREE from "three"
-import { useXRStore } from "library/store"
+import { useXRStore } from "@/library/XRstore"
 
 //sets default position when an XR session starts
 //takes into account initial headset/phone position
-export const XRDefaults = (props: {
-  position?: number[]
-  rotation?: number[]
-}) => {
+export const XRDefaults = (props: { position?: number[]; rotation?: number[] }) => {
   const { position = [0, 1.6, 2], rotation = [0, 0, 0] } = props
   const wasPresenting = useRef(false)
   const xrMode = useXRStore((state) => state.xrMode)
@@ -18,25 +15,15 @@ export const XRDefaults = (props: {
   useFrame(({ gl }, _, frame) => {
     if (isPresenting) {
       if (!wasPresenting.current) {
-        const pose = frame?.getViewerPose(
-          gl.xr.getReferenceSpace() as XRReferenceSpace
-        )
+        const pose = frame?.getViewerPose(gl.xr.getReferenceSpace() as XRReferenceSpace)
         //an AR session might not have a pose
         const posePosition = new THREE.Vector3(
-          ...["x", "y", "z"].map(
-            (a) =>
-              (pose?.transform.position[
-                a as keyof DOMPointReadOnly
-              ] as number) ?? 0
-          )
+          ...["x", "y", "z"].map((a) => (pose?.transform.position[a as keyof DOMPointReadOnly] as number) ?? 0)
         )
         const poseRotation = new THREE.Euler().setFromQuaternion(
           new THREE.Quaternion(
             ...["x", "y", "z", "w"].map(
-              (a) =>
-                (pose?.transform.orientation[
-                  a as keyof DOMPointReadOnly
-                ] as number) ?? 0
+              (a) => (pose?.transform.orientation[a as keyof DOMPointReadOnly] as number) ?? 0
             )
           )
         )
